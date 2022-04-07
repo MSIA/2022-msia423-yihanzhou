@@ -33,10 +33,10 @@ estimate the price of a used BMW car.
 
 ### Mission
 
-In this project, I am using the dataset from Kaggle -- 100,000 UK Used Car Data set.
+The project uses the dataset from Kaggle -- 100,000 UK Used Car Data set.
 The link to the dataset is [here](https://www.kaggle.com/datasets/adityadesai13/used-car-dataset-ford-and-mercedes). 
-I only choose the subset of records for the BMW cars and the dataset 
-I used contain 10781 records with 9 features. The regression  
+The app only used the subset of records for the BMW cars and the dataset 
+which contains 10781 records with 9 features. The regression  
 methods will then be employed on the data to evaluate the price of a used BMW car.
 
 When using this app, it will firstly ask for the following attributes of the car 
@@ -50,7 +50,7 @@ from the users:
 - mpg
 - engine size 
 
-Then, under the supervised learning model I used, the app will predict the potential price 
+Then, under the supervised learning model used, the app will predict the potential price 
 of certain car for the user. On the buyer side, the dynamic nature of this app 
 is to help them to select the best value when purchasing a used BMW car 
 in the UK market. On the side of a dealer, this app will help seller to set a 
