@@ -2,7 +2,7 @@
 Author: Yihan Zhou
 
 # Table of Contents
-* [Project Charter ](#Project Charter)
+* [Project Charter ](#Project-Charter)
 * [Directory structure ](#Directory-structure)
 * [Running the app ](#Running-the-app)
     * [1. Initialize the database ](#1.-Initialize-the-database)
