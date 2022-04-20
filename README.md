@@ -18,16 +18,16 @@ Author: Yihan Zhou
 ### Vision
 Cars serve as an important tool for our foreign students to study in a new country, 
 it can make our life more convenient. Although the price of a brand-new car 
-is predetermined by the manufacturer and the price will not fluctuate too much 
+is predetermined by the manufacturers and the price will not fluctuate too much 
 across countries, the international students tend to purchase a used car instead 
-since those used cars have a fairly lower price,so it is economic-wise to buy 
+since those used cars have a fairly low price. So it is economic-wise to buy 
 a used car for daily life through years of college. Nevertheless, it is hard for students 
-to know what a fair price of a used car based on different conditions of the car 
-itself. There are lots of factors that affect the price of a used car, for example: 
+to know what a fair price of a used car is based on different conditions of the cars. 
+There are lots of factors that affect the price of a used car, for example 
 the mileage, the type of fuel, the age of the car, and so on so forth. I am a 
-big fan of BMW and I also bought a used BMW car in my college. My friends studied 
-in the UK always complain about the expensive price of transportation in UK and the used car market
-in the UK is hot. Therefore, I hope this app can help both the buyer and seller to 
+big fan of BMW and I also bought a used BMW car in my college. My friends who studied 
+in the UK always complain about the expensive price of transportation in the UK and the used car market
+in the UK is hot nowadays. Therefore, I hope this app can help both the buyers and sellers 
 estimate the price of a used BMW car. 
 
 
@@ -36,7 +36,7 @@ estimate the price of a used BMW car.
 The project uses the dataset from Kaggle -- 100,000 UK Used Car Data set.
 The link to the dataset is [here](https://www.kaggle.com/datasets/adityadesai13/used-car-dataset-ford-and-mercedes). 
 The app only used the subset of records for the BMW cars and the dataset 
-which contains 10781 records with 9 features. The regression  
+contains 10781 records with 9 features. The regression  
 methods will then be employed on the data to evaluate the price of a used BMW car.
 
 When using this app, it will firstly ask for the following attributes of the car 
@@ -50,10 +50,10 @@ from the users:
 - mpg
 - engine size 
 
-Then, under the supervised learning model used, the app will predict the potential price 
-of certain car for the user. On the buyer side, the dynamic nature of this app 
+Then, under the supervised learning models used, the app will predict the potential price 
+of a certain car for the user. On the buyers' side, the dynamic nature of this app 
 is to help them to select the best value when purchasing a used BMW car 
-in the UK market. On the side of a dealer, this app will help seller to set a 
+in the UK market. On the side of a dealer, this app will help sellers to set a 
 reasonable car price, which would make their sales more attractive to buyers.
 
 
@@ -62,20 +62,20 @@ reasonable car price, which would make their sales more attractive to buyers.
 #### Machine Learning Metrics:
 
 The application will be using supervised learning algorithms and the **Random
-Forest Classifier/ Linear Regression Model** are good choices. The metric that will be used to evaluate the 
-performance of the classifier will be R Squared and Mean Squared Error, and a good 
+Forest Classifier/ Linear Regression Model** are good choices. The metrics that will be used to evaluate the 
+performance of the classifiers will be R Squared and Mean Squared Error, and a good 
 model is intended to generate a higher R Squared and lower MSE by the nature of
 regression analysis.
 
 #### Business Metrics:
-From a business standpoint, the success deployment of this app will
+From a business standpoint, the successful deployment of this app will
 help both the sellers and buyers to evaluate the value of a used BMW car, which
-in turns to help the buyers to save money and the sellers to attract more customers.
-We can quantify the apps in several ways:
+in turn to help the buyers to save money and the sellers attract more customers.
+So, it is a good way to quantify the apps in several ways:
 - The daily active users 
 - User engagement level (average time spent)
 - Total transactions made
-- Sellers acceptance rate
+- Sellers' acceptance rate
 
 
 
