@@ -146,4 +146,3 @@ class CarManager:
         """
         self.session.close()
         logger.info("Session closed")
-
