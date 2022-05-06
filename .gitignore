@@ -13,3 +13,7 @@ data/*
 !data/external/
 config/local/*
 !.gitkeep
+
+# Credentials
+.mysqlconfig
+.profile
