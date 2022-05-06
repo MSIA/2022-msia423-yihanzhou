@@ -136,6 +136,7 @@ So, it is a good way to quantify the apps in several ways:
 ├── requirements.txt                  <- Python package dependencies 
 ```
 
+
 ## Running the app 
 
 ### 1. Initialize the database 
@@ -144,22 +145,62 @@ So, it is a good way to quantify the apps in several ways:
 To build the image, run from this directory (the root of the repo): 
 
 ```bash
- docker build -f dockerfiles/Dockerfile.run -t pennylanedb .
+docker build -t s3demo -f dockerfiles/Dockerfile_data .
 ```
-#### Create the database 
-To create the database in the location configured in `config.py` run: 
+
+#### Upload the data to your S3bucket
+
+The following will upload the file **data/raw/bmw.csv** to your S3bucket, 
+assuming that you have environment variables, AWS_ACCESS_KEY_ID and 
+AWS_SECRET_ACCESS_KEY, set in your environment:
 
 ```bash
-docker run --mount type=bind,source="$(pwd)"/data,target=/app/data/ pennylanedb create_db  --engine_string=sqlite:///data/tracks.db
+docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY s3demo 
 ```
-The `--mount` argument allows the app to access your local `data/` folder and save the SQLite database there so it is available after the Docker container finishes.
 
+#### Download the dataset from S3 bucket
 
-#### Adding songs 
-To add songs to the database:
+The following will download the file, data/raw/bmw.csv from my S3 bucket to data/sample/bmw2.csv, 
+assuming you have your environment variables, **AWS_ACCESS_KEY_ID** and **AWS_SECRET_ACCESS_KEY** 
+set in your environment:
 
 ```bash
-docker run --mount type=bind,source="$(pwd)"/data,target=/app/data/ pennylanedb ingest --engine_string=sqlite:///data/tracks.db --artist=Emancipator --title="Minor Cause" --album="Dusk to Dawn"
+docker run --mount type=bind,source="$(pwd)/data/",target=/app/data/ -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY
+s3demo --download --local_path=data/bmw2.csv --s3_path=s3://2022-msia423-zhou-yihan/raw/bmw.csv
+```
+
+The `--mount` argument allows the app to access your local `data/` folder and 
+save the SQLite database there, so it is available after the Docker container finishes.
+
+#### Create the database in RDS
+**Don't forget to connect to the Northwestern VPN**
+
+1. Export your connection details to an active shell session.
+```bash
+source .mysqlconfig
+```
+
+2. Build Docker Image:
+```bash
+docker build -t bmwsql -f dockerfiles/Dockerfile_rds .
+```
+
+3. Create the database in RDS
+
+```bash
+docker run -it --env SQLALCHEMY_DATABASE_URI bmwsql create_db  
+```
+
+4. Adding result data to the table
+
+```bash
+docker run -it --env SQLALCHEMY_DATABASE_URI bmwsql ingest_result
+```
+
+5. Deletes car info table
+
+```bash
+docker run -it --env SQLALCHEMY_DATABASE_URI bmwsql delete
 ```
 
 #### Defining your engine string 
@@ -167,24 +208,15 @@ A SQLAlchemy database connection is defined by a string with the following forma
 
 `dialect+driver://username:password@host:port/database`
 
-The `+dialect` is optional and if not provided, a default is used. For a more detailed description of what `dialect` and `driver` are and how a connection is made, you can see the documentation [here](https://docs.sqlalchemy.org/en/13/core/engines.html). We will cover SQLAlchemy and connection strings in the SQLAlchemy lab session on 
+
 ##### Local SQLite database 
 
 A local SQLite database can be created for development and local testing. It does not require a username or password and replaces the host and port with the path to the database file: 
 
 ```python
-engine_string='sqlite:///data/tracks.db'
+engine_string='sqlite:///data/msia_423.db'
 
 ```
-
-The three `///` denote that it is a relative path to where the code is being run (which is from the root of this directory).
-
-You can also define the absolute path with four `////`, for example:
-
-```python
-engine_string = 'sqlite://///Users/cmawer/Repos/2022-msia423-template-repository/data/tracks.db'
-```
-
 
 ### 2. Configure Flask app 
 
