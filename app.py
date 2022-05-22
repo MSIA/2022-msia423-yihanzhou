@@ -6,7 +6,7 @@ import sqlalchemy.exc
 from flask import Flask, render_template, request, redirect, url_for
 
 # For setting up the Flask-SQLAlchemy database session
-from src.add_songs import Tracks, TrackManager
+from src.bmw_db import CarManager, Car
 
 # Initialize the Flask application
 app = Flask(__name__, template_folder="app/templates",
@@ -29,14 +29,14 @@ logger.debug(
     , app.config["PORT"])
 
 # Initialize the database session
-track_manager = TrackManager(app)
+car_manager = CarManager(app)
 
 
 @app.route('/')
 def index():
-    """Main view that lists songs in the database.
+    """Main view that car information in the database.
 
-    Create view into index page that uses data queried from Track database and
+    Create view into index page that uses data queried from BMW database and
     inserts it into the app/templates/index.html template.
 
     Returns:
@@ -45,10 +45,10 @@ def index():
     """
 
     try:
-        tracks = track_manager.session.query(Tracks).limit(
+        car_info = car_manager.session.query(Car).limit(
             app.config["MAX_ROWS_SHOW"]).all()
         logger.debug("Index page accessed")
-        return render_template('index.html', tracks=tracks)
+        return render_template('index.html', car_info=car_info)
     except sqlite3.OperationalError as e:
         logger.error(
             "Error page returned. Not able to query local sqlite database: %s."
@@ -63,37 +63,61 @@ def index():
         return render_template('error.html')
     except:
         traceback.print_exc()
-        logger.error("Not able to display tracks, error page returned")
+        logger.error("Not able to display car infomation, error page returned")
         return render_template('error.html')
 
 
-@app.route('/add', methods=['POST'])
+@app.route('/result', methods=['POST'])
 def add_entry():
-    """View that process a POST with new song input
+    """View that process a POST with new car input
+
+    Add new car information to database and get prediction results
 
     Returns:
         redirect to index page
     """
+    if request.method == 'POST':
+        try:
+            car_manager.add_info(model=request.form['model'],
+                                 year=request.form['year'],
+                                 price=request.form['price'],
+                                 transmission=request.form['transmission'],
+                                 mileage=request.form['mileage'],
+                                 fuelType=request.form['fuelType'],
+                                 mpg=request.form['mpg'],
+                                 engineSize=request.form['engineSize'])
+            logger.info("New car info added: %s by %s", request.form['model'],
+                        request.form['year'])
+            return redirect(url_for('index'))
 
-    try:
-        track_manager.add_track(artist=request.form['artist'],
-                                album=request.form['album'],
-                                title=request.form['title'])
-        logger.info("New song added: %s by %s", request.form['title'],
-                    request.form['artist'])
-        return redirect(url_for('index'))
-    except sqlite3.OperationalError as e:
-        logger.error(
-            "Error page returned. Not able to add song to local sqlite "
-            "database: %s. Error: %s ",
-            app.config['SQLALCHEMY_DATABASE_URI'], e)
-        return render_template('error.html')
-    except sqlalchemy.exc.OperationalError as e:
-        logger.error(
-            "Error page returned. Not able to add song to MySQL database: %s. "
-            "Error: %s ",
-            app.config['SQLALCHEMY_DATABASE_URI'], e)
-        return render_template('error.html')
+        except sqlite3.OperationalError as e:
+            logger.error(
+                "Error page returned. Not able to add song to local sqlite "
+                "database: %s. Error: %s ",
+                app.config['SQLALCHEMY_DATABASE_URI'], e)
+            return render_template('error.html')
+        except sqlalchemy.exc.OperationalError as e:
+            logger.error(
+                "Error page returned. Not able to add song to MySQL database: %s. "
+                "Error: %s ",
+                app.config['SQLALCHEMY_DATABASE_URI'], e)
+            return render_template('error.html')
+
+# @app.route('/result', methods=['POST'])
+# def add_entry():
+#     if request.method == 'POST':
+#         user_input = request.form.to_dict()
+#         user_input = str(user_input).lower()
+#         try:
+#             car_info = car_manager.session.query(Car).filter_by(input=user_input).limit(
+#                 app.config["MAX_ROWS_SHOW"]).all()
+#             if len(car_info) == 0:
+#                 return render_template('not_found.html', user_input=user_input)
+#             return render_template('index.html', car_info=car_info, user_input=user_input)
+#         except sqlalchemy.exc.OperationalError:
+#             traceback.print_exc()
+#             logger.warning("Not able to display car information, error page returned")
+#             return render_template('error.html')
 
 
 if __name__ == '__main__':
