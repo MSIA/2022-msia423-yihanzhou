@@ -1,0 +1,16 @@
+
+acquire_data:
+  path: data/raw/bmw.csv
+  columns: ['model', 'year', 'price', 'transmission',
+            'mileage', 'fuelType', 'mpg', 'engineSize']
+
+get_features:
+  cat_col: ['model','transmission','fuelType']
+
+train_model:
+  ratio: 0.3
+  random_state: 22
+  target: 'price'
+  n_estimators: 10
+  max_depth: 40
+  save_path: data/result/result.csv
