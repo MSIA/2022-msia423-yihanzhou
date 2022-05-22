@@ -6,9 +6,9 @@ import flask
 import pandas as pd
 import sqlalchemy
 import sqlalchemy.exc
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from flask_sqlalchemy import SQLAlchemy
 
 # Set up logging config
 logging.basicConfig(format='%(asctime)s%(name)-12s%(levelname)-8s%(message)s',
@@ -33,7 +33,6 @@ class Car(Base):
     transmission = sqlalchemy.Column(sqlalchemy.String(100), unique=False, nullable=False)
     mileage = sqlalchemy.Column(sqlalchemy.Integer, unique=False, nullable=False)
     fuelType = sqlalchemy.Column(sqlalchemy.String(100), unique=False, nullable=False)
-    tax = sqlalchemy.Column(sqlalchemy.Integer, unique=False, nullable=False)
     mpg = sqlalchemy.Column(sqlalchemy.Float, unique=False, nullable=False)
     engineSize = sqlalchemy.Column(sqlalchemy.Float, unique=False, nullable=False)
 
@@ -137,6 +136,38 @@ class CarManager:
             logger.error('You might have connection error')
         else:
             logger.info("Delete successfully")
+
+    def add_info(self,
+                 model: str,
+                 year: int,
+                 price: int,
+                 transmission: str,
+                 mileage: int,
+                 fuelType: str,
+                 mpg: float,
+                 engineSize: float) -> None:
+        """Seeds an existing database with car_info.
+
+        Args:
+            model (str): The model of the car
+            year (int): The year of the car
+            price (int): The price of the car
+            transmission (str): The transmission of the car
+            mileage (int): The mileage of the car
+            fuelType (str): The fuelType of the car
+            mpg (float): The mpg of the car
+            engineSize (float): The engine size of the car
+
+        Returns:
+            None
+        """
+
+        session = self.session
+        car = Car(model=model, year=year, price=price, transmission=transmission, mileage=mileage,
+                  fuelType=fuelType, mpg=mpg, engineSize=engineSize)
+        session.add(car)
+        session.commit()
+        logger.info("Car info added")
 
     def close(self) -> None:
         """
