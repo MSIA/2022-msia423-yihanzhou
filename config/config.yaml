@@ -7,10 +7,12 @@ acquire_data:
 get_features:
   cat_col: ['model','transmission','fuelType']
 
-train_model:
+split_data:
   ratio: 0.3
   random_state: 22
   target: 'price'
+
+train_model:
   n_estimators: 10
   max_depth: 40
-  save_path: data/result/result.csv
+  random_state: 22
