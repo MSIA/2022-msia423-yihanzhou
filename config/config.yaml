@@ -16,3 +16,16 @@ train_model:
   n_estimators: 10
   max_depth: 40
   random_state: 22
+
+predict:
+  transform_input:
+    cat_cols: ['model', 'transmission', 'fuelType']
+    ohe_cols: ['x0_1 Series', 'x0_2 Series', 'x0_3 Series', 'x0_4 Series',
+       'x0_5 Series', 'x0_6 Series', 'x0_7 Series', 'x0_8 Series', 'x0_M2',
+       'x0_M3', 'x0_M4', 'x0_M5', 'x0_M6', 'x0_X1', 'x0_X2', 'x0_X3', 'x0_X4',
+       'x0_X5', 'x0_X6', 'x0_X7', 'x0_Z3', 'x0_Z4', 'x0_i3', 'x0_i8',
+       'x1_Automatic', 'x1_Manual', 'x1_Semi-Auto', 'x2_Diesel', 'x2_Electric',
+       'x2_Hybrid', 'x2_Other', 'x2_Petrol', 'year', 'mileage', 'mpg',
+       'engineSize']
+  get_prediction:
+    model_path: data/raw/rf.sav
