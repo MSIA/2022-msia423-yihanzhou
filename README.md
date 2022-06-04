@@ -242,6 +242,12 @@ make score
 make evaluate
 ```
 
+**You can also use the following command to execute the entire model pipeline**
+
+```bash
+make all
+```
+
 ### 3. Configure Flask app 
 
 `config/flaskconfig.py` holds the configurations for the Flask app. It includes the following configurations:
