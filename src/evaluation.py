@@ -4,9 +4,9 @@ This module is for evaluating the model result
 
 import logging
 
-import sklearn
 import pandas as pd
 
+import sklearn
 from sklearn import metrics
 
 logging.basicConfig(format='%(name)-12s %(levelname)-8s %(message)s', level=logging.DEBUG)

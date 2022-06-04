@@ -5,7 +5,6 @@ This module is for splitting the data
 import logging
 import sklearn
 import sklearn.ensemble
-from sklearn.preprocessing import StandardScaler
 
 logging.basicConfig(format='%(name)-12s %(levelname)-8s %(message)s', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -29,11 +28,6 @@ def train_test_split(input_data, ratio, random_state, target):
     logger.info("Feature columns have been extracted")
     target = input_data[target]
     logger.info("Target column has been extracted")
-
-    # Normalize the feature columns
-    # scaler = StandardScaler()
-    # features = scaler.fit_transform(features)
-    # logger.info("Target columns have been normalized")
 
     # Split the train and test data
     X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(features, target, test_size=ratio,

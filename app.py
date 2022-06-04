@@ -1,12 +1,19 @@
+"""
+This file defines some functionality in the app
+"""
 import logging.config
 import sqlite3
 import traceback
 
+import yaml
 import sqlalchemy.exc
-from flask import Flask, render_template, request, redirect, url_for
+import pandas as pd
+from flask import Flask, render_template, request
 
 # For setting up the Flask-SQLAlchemy database session
-from src.bmw_db import CarManager, Car
+from src.bmw_db import CarManager
+from config.flaskconfig import MODEL_TYPE, TRANSMISSION_TYPE, FUELTYPE, ENGINESIZE
+import src.predict as predict
 
 # Initialize the Flask application
 app = Flask(__name__, template_folder="app/templates",
@@ -31,6 +38,15 @@ logger.debug(
 # Initialize the database session
 car_manager = CarManager(app)
 
+# Load yaml configuration file
+# load yaml configuration file
+try:
+    with open('config/config.yaml', "r") as file:
+        conf = yaml.load(file, Loader=yaml.FullLoader)
+        logger.info("Configuration file loaded")
+except FileNotFoundError:
+    logger.error("Configuration file is not found")
+
 
 @app.route('/')
 def index():
@@ -40,15 +56,27 @@ def index():
     inserts it into the app/templates/index.html template.
 
     Returns:
-        Rendered html template
+         rendered html template located at: app/templates/index.html
 
     """
 
+    # try:
+    #     car_info = car_manager.session.query(Car).limit(
+    #         app.config["MAX_ROWS_SHOW"]).all()
+    #     logger.debug("Index page accessed")
+    #     return render_template('index.html', car_info=car_info)
+
     try:
-        car_info = car_manager.session.query(Car).limit(
-            app.config["MAX_ROWS_SHOW"]).all()
         logger.debug("Index page accessed")
-        return render_template('index.html', car_info=car_info)
+        return render_template('index.html',
+                               model=MODEL_TYPE,
+                               # year=year,
+                               tranmission=TRANSMISSION_TYPE,
+                               # mileage=mileage,
+                               fuelType=FUELTYPE,
+                               # mpg=mpg,
+                               engineSize=ENGINESIZE
+                               )
     except sqlite3.OperationalError as e:
         logger.error(
             "Error page returned. Not able to query local sqlite database: %s."
@@ -63,61 +91,50 @@ def index():
         return render_template('error.html')
     except:
         traceback.print_exc()
-        logger.error("Not able to display car infomation, error page returned")
+        logger.warning("Not able to display car information, error page returned")
         return render_template('error.html')
 
 
-@app.route('/result', methods=['POST'])
+@app.route('/result', methods=['POST', 'GET'])
 def add_entry():
     """View that process a POST with new car input
 
     Add new car information to database and get prediction results
 
     Returns:
-        redirect to index page
+        rendered html template located at: app/templates/result.html if successfully processed,
+        rendered html template located at: app/templates/error.html if any error occurs
     """
-    if request.method == 'POST':
+    if request.method == 'GET':
+        return "Visit the homepage to add applicants and get predictions"
+    elif request.method == 'POST':
         try:
             car_manager.add_info(model=request.form['model'],
                                  year=request.form['year'],
-                                 price=request.form['price'],
                                  transmission=request.form['transmission'],
                                  mileage=request.form['mileage'],
-                                 fuelType=request.form['fuelType'],
+                                 fuelType=request.form['fueltype'],
                                  mpg=request.form['mpg'],
-                                 engineSize=request.form['engineSize'])
+                                 engineSize=request.form['enginesize'])
             logger.info("New car info added: %s by %s", request.form['model'],
                         request.form['year'])
-            return redirect(url_for('index'))
 
-        except sqlite3.OperationalError as e:
-            logger.error(
-                "Error page returned. Not able to add song to local sqlite "
-                "database: %s. Error: %s ",
-                app.config['SQLALCHEMY_DATABASE_URI'], e)
+            #Get the car price estimation on the new car information
+            user_input = {'model': request.form['model'],
+                          'year': request.form['year'],
+                          'transmission': request.form['transmission'],
+                          'mileage': request.form['mileage'],
+                          'fuelType': request.form['fueltype'],
+                          'mpg': request.form['mpg'],
+                          'engineSize': request.form['enginesize']}
+            user_input_transformed = predict.transform_input(user_input, **conf['predict']['transform_input'])
+            ypred = predict.get_prediction(user_input_transformed, **conf['predict']['get_prediction'])[0]
+            logger.info("The new car estimated price is generated")
+            logger.debug("Result page accessed")
+            return render_template('result.html', output=ypred)
+        except:
+            logger.warning("Not able to process your request, error page returned")
             return render_template('error.html')
-        except sqlalchemy.exc.OperationalError as e:
-            logger.error(
-                "Error page returned. Not able to add song to MySQL database: %s. "
-                "Error: %s ",
-                app.config['SQLALCHEMY_DATABASE_URI'], e)
-            return render_template('error.html')
-
-# @app.route('/result', methods=['POST'])
-# def add_entry():
-#     if request.method == 'POST':
-#         user_input = request.form.to_dict()
-#         user_input = str(user_input).lower()
-#         try:
-#             car_info = car_manager.session.query(Car).filter_by(input=user_input).limit(
-#                 app.config["MAX_ROWS_SHOW"]).all()
-#             if len(car_info) == 0:
-#                 return render_template('not_found.html', user_input=user_input)
-#             return render_template('index.html', car_info=car_info, user_input=user_input)
-#         except sqlalchemy.exc.OperationalError:
-#             traceback.print_exc()
-#             logger.warning("Not able to display car information, error page returned")
-#             return render_template('error.html')
 
 
 if __name__ == '__main__':

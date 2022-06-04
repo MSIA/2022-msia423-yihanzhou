@@ -7,9 +7,6 @@ import sklearn
 import sklearn.ensemble
 import pandas as pd
 
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
-from sklearn import metrics
 
 logging.basicConfig(format='%(name)-12s %(levelname)-8s %(message)s', level=logging.DEBUG)
 logger = logging.getLogger(__name__)

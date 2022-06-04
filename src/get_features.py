@@ -19,11 +19,10 @@ def get_features(data, cat_col):
         input_data(pd.Dataframe): the input data for training the model
     """
 
-    # Find the categorical columns
-    # cat_col = [col for col in data.columns if data[col].dtype == 'object']
-
-    # Convert categorical columns using One hot encoder
     ohe = OneHotEncoder()
+
+    if not isinstance(data, pd.DataFrame):
+        raise TypeError("Provided argument `data` is not a Panda's DataFrame object")
     ohe_features = pd.DataFrame(ohe.fit_transform(data[cat_col]).toarray(),
                                 columns=ohe.get_feature_names())
 
