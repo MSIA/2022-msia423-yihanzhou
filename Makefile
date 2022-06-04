@@ -57,6 +57,8 @@ cleanraw:
 cleanresult:
 	rm data/result/*
 
+all: download_from_s3 raw features split train score evaluate
+
 
 
 
