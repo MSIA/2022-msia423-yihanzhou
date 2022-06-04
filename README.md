@@ -3,14 +3,18 @@ Author: Yihan Zhou
 
 # Table of Contents
 * [Project Charter ](#Project-Charter)
+  * [1. Vision](#1.-Vision)
+  * [2. Mission](#2.-Mission)
+  * [3. Success criteria](#3.-Success-criteria)
 * [Directory structure ](#Directory-structure)
 * [Running the app ](#Running-the-app)
     * [1. Initialize the database ](#1.-Initialize-the-database)
-    * [2. Configure Flask app ](#2.-Configure-Flask-app)
-    * [3. Run the Flask app ](#3.-Run-the-Flask-app)
+    * [2. Running the Pipeline](#2.-Running-the-Pipeline)
+    * [3. Configure Flask app ](#3.-Configure-Flask-app)
+    * [4. Run the Flask app ](#4.-Run-the-Flask-app)
 * [Testing](#Testing)
-* [Mypy](#Mypy)
-* [Pylint](#Pylint)
+* [Clean](#Clean-the-data-directory)
+
 
 
 ## Project Charter
@@ -36,8 +40,8 @@ estimate the price of a used BMW car.
 The project uses the dataset from Kaggle -- 100,000 UK Used Car Data set.
 The link to the dataset is [here](https://www.kaggle.com/datasets/adityadesai13/used-car-dataset-ford-and-mercedes). 
 The app only used the subset of records for the BMW cars and the dataset 
-contains 10781 records with 9 features. The regression  
-methods will then be employed on the data to evaluate the price of a used BMW car.
+contains 10781 records with 9 features. The regression methods will then be employed on the data to evaluate the 
+price of a used BMW car.
 
 When using this app, it will firstly ask for the following attributes of the car 
 from the users: 
@@ -46,7 +50,6 @@ from the users:
 - transmission type
 - mileage
 - fuelType
-- tax
 - mpg
 - engine size 
 
@@ -139,13 +142,13 @@ So, it is a good way to quantify the apps in several ways:
 
 ## Running the app 
 
-### 1. Initialize the database 
+### 1. Initialize the database
 #### Build the image 
 
 To build the image, run from this directory (the root of the repo): 
 
 ```bash
-docker build -t s3demo -f dockerfiles/Dockerfile_data .
+make model-image
 ```
 
 #### Upload the data to your S3bucket
@@ -155,52 +158,36 @@ assuming that you have environment variables, AWS_ACCESS_KEY_ID and
 AWS_SECRET_ACCESS_KEY, set in your environment:
 
 ```bash
-docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY s3demo 
+make upload_to_s3
 ```
 
 #### Download the dataset from S3 bucket
 
-The following will download the file, data/raw/bmw.csv from my S3 bucket to data/sample/bmw2.csv, 
+The following will download the file, data/raw/bmw.csv from my S3 bucket to data/bmw2.csv, 
 assuming you have your environment variables, **AWS_ACCESS_KEY_ID** and **AWS_SECRET_ACCESS_KEY** 
 set in your environment:
 
 ```bash
-docker run --mount type=bind,source="$(pwd)/data/",target=/app/data/ -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY
-s3demo --download --local_path=data/bmw2.csv --s3_path=s3://2022-msia423-zhou-yihan/raw/bmw.csv
+make download_from_s3
 ```
 
-The `--mount` argument allows the app to access your local `data/` folder and 
-save the SQLite database there, so it is available after the Docker container finishes.
+#### Create the database in RDS or local SQLite
 
-#### Create the database in RDS
-**Don't forget to connect to the Northwestern VPN**
-
-1. Export your connection details to an active shell session.
 ```bash
-source .mysqlconfig
+make create_db 
 ```
 
-2. Build Docker Image:
+#### Ingest data to the database
+- Trying an example below:
+
 ```bash
-docker build -t bmwsql -f dockerfiles/Dockerfile_rds .
+docker run --mount type=bind,source="$(pwd)",target=/app/ -e SQLALCHEMY_DATABASE_URI final-project  ingest --model='5 Series' --year=2018 --transmission='Automatic' --mileage=2100 --fuelType='Diesel' --mpg=20 --engineSize=20
 ```
 
-3. Create the database in RDS
+#### Delete the car information from the database
 
 ```bash
-docker run -it --env SQLALCHEMY_DATABASE_URI bmwsql create_db  
-```
-
-4. Adding result data to the table
-
-```bash
-docker run -it --env SQLALCHEMY_DATABASE_URI bmwsql ingest_result
-```
-
-5. Deletes car info table
-
-```bash
-docker run -it --env SQLALCHEMY_DATABASE_URI bmwsql delete
+make delete_car_info
 ```
 
 #### Defining your engine string 
@@ -215,10 +202,42 @@ A local SQLite database can be created for development and local testing. It doe
 
 ```python
 engine_string='sqlite:///data/msia_423.db'
-
 ```
 
-### 2. Configure Flask app 
+### 2. Running the Pipeline
+The following steps help you running each individual step of the model pipeline:
+
+##### Acquiring the raw data:
+```bash
+make raw
+```
+
+##### Featuring the raw data for modeling:
+```bash
+make features
+```
+
+##### Splitting the Test and Train data
+```bash
+make split
+```
+
+##### Training the model
+```bash
+make train
+```
+
+##### Scoring the model
+```bash
+make score
+```
+
+##### Evaluating the model performance
+```bash
+make evaluate
+```
+
+### 3. Configure Flask app 
 
 `config/flaskconfig.py` holds the configurations for the Flask app. It includes the following configurations:
 
@@ -228,32 +247,31 @@ LOGGING_CONFIG = "config/logging/local.conf"  # Path to file that configures Pyt
 HOST = "0.0.0.0" # the host that is running the app. 0.0.0.0 when running locally 
 PORT = 5000  # What port to expose app on. Must be the same as the port exposed in dockerfiles/Dockerfile.app 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///data/tracks.db'  # URI (engine string) for database that contains tracks
-APP_NAME = "penny-lane"
+APP_NAME = "bmw_price_estimator"
 SQLALCHEMY_TRACK_MODIFICATIONS = True 
 SQLALCHEMY_ECHO = False  # If true, SQL for queries made will be printed
 MAX_ROWS_SHOW = 100 # Limits the number of rows returned from the database 
 ```
 
-### 3. Run the Flask app 
+### 4. Run the Flask app 
 
 #### Build the image 
 
 To build the image, run from this directory (the root of the repo): 
 
 ```bash
- docker build -f dockerfiles/Dockerfile.app -t pennylaneapp .
+make app-image
 ```
 
-This command builds the Docker image, with the tag `pennylaneapp`, based on the instructions in `dockerfiles/Dockerfile.app` and the files existing in this directory.
+This command builds the Docker image, with the tag `final-project-app`, based on the instructions in `dockerfiles/Dockerfile.app` and the files existing in this directory.
 
 #### Running the app
 
 To run the Flask app, run: 
 
 ```bash
- docker run --name test-app --mount type=bind,source="$(pwd)"/data,target=/app/data/ -p 5000:5000 pennylaneapp
+make runapp
 ```
-You should be able to access the app at http://127.0.0.1:5000/ in your browser (Mac/Linux should also be able to access the app at http://127.0.0.1:5000/ or localhost:5000/) .
 
 The arguments in the above command do the following: 
 
@@ -286,13 +304,13 @@ The name will be provided in the right most column.
 Run the following:
 
 ```bash
- docker build -f dockerfiles/Dockerfile.test -t pennylanetest .
+make test-image
 ```
 
 To run the tests, run: 
 
 ```bash
- docker run pennylanetest
+make unit-test
 ```
 
 The following command will be executed within the container to run the provided unit tests under `test/`:  
@@ -301,51 +319,12 @@ The following command will be executed within the container to run the provided 
 python -m pytest
 ``` 
 
-## Mypy
-
-Run the following:
-
+## Clean the data directory
+If you want to clean all the data and model generated above, you can use the following code to clean the data/raw folder or data/result folder in my repo
 ```bash
- docker build -f dockerfiles/Dockerfile.mypy -t pennymypy .
+make cleanraw
 ```
-
-To run mypy over all files in the repo, run: 
-
+or
 ```bash
- docker run pennymypy .
-```
-To allow for quick iteration, mount your entire repo so changes in Python files are detected:
-
-
-```bash
- docker run --mount type=bind,source="$(pwd)"/,target=/app/ pennymypy .
-```
-
-To run mypy for a single file, run: 
-
-```bash
- docker run pennymypy run.py
-```
-
-## Pylint
-
-Run the following:
-
-```bash
- docker build -f dockerfiles/Dockerfile.pylint -t pennylint .
-```
-
-To run pylint for a file, run:
-
-```bash
- docker run pennylint run.py 
-```
-
-(or any other file name, with its path relative to where you are executing the command from)
-
-To allow for quick iteration, mount your entire repo so changes in Python files are detected:
-
-
-```bash
- docker run --mount type=bind,source="$(pwd)"/,target=/app/ pennylint run.py
+make cleanresult
 ```
