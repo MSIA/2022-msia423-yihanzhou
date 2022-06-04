@@ -55,7 +55,6 @@ def upload_file_to_s3(local_path: str, s3path: str) -> None:
         logger.info('Data uploaded from %s to %s', local_path, s3path)
 
 
-
 def download_file_from_s3(local_path: str, s3path: str) -> None:
     """
     Download the file from s3 to local
