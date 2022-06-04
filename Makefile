@@ -6,6 +6,9 @@ model-image:
 create_db:
 	docker run -it --env SQLALCHEMY_DATABASE_URI final-project create_db
 
+delete_car_info:
+	docker run -it --env SQLALCHEMY_DATABASE_URI final-project delete
+
 download_from_s3:
 	docker run --mount type=bind,source="$(shell pwd)",target=/app/ -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY final-project download_file_from_s3 --local_path=data/bmw2.csv --s3_path=s3://2022-msia423-zhou-yihan/raw/bmw.csv
 
