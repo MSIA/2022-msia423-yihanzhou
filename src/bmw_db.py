@@ -29,7 +29,6 @@ class Car(Base):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     model = sqlalchemy.Column(sqlalchemy.String(100), unique=False, nullable=False)
     year = sqlalchemy.Column(sqlalchemy.Integer, unique=False, nullable=False)
-    price = sqlalchemy.Column(sqlalchemy.Integer, unique=False, nullable=False)
     transmission = sqlalchemy.Column(sqlalchemy.String(100), unique=False, nullable=False)
     mileage = sqlalchemy.Column(sqlalchemy.Integer, unique=False, nullable=False)
     fuelType = sqlalchemy.Column(sqlalchemy.String(100), unique=False, nullable=False)
@@ -54,7 +53,7 @@ def create_db(engine_string: str = None) -> None:
     if engine_string is None:
         logger.error('No ENGINE_STRING provided')
         raise ValueError("`ENGINE_STRING` must be provided")
-    #else:
+    # else:
     engine = sqlalchemy.create_engine(engine_string)
 
     try:
@@ -140,7 +139,6 @@ class CarManager:
     def add_info(self,
                  model: str,
                  year: int,
-                 price: int,
                  transmission: str,
                  mileage: int,
                  fuelType: str,
@@ -151,7 +149,6 @@ class CarManager:
         Args:
             model (str): The model of the car
             year (int): The year of the car
-            price (int): The price of the car
             transmission (str): The transmission of the car
             mileage (int): The mileage of the car
             fuelType (str): The fuelType of the car
@@ -161,13 +158,21 @@ class CarManager:
         Returns:
             None
         """
-
-        session = self.session
-        car = Car(model=model, year=year, price=price, transmission=transmission, mileage=mileage,
-                  fuelType=fuelType, mpg=mpg, engineSize=engineSize)
-        session.add(car)
-        session.commit()
-        logger.info("Car info added")
+        try:
+            session = self.session
+            car = Car(model=model,
+                      year=year,
+                      transmission=transmission,
+                      mileage=mileage,
+                      fuelType=fuelType,
+                      mpg=mpg,
+                      engineSize=engineSize)
+            session.add(car)
+            session.commit()
+            logger.info("A new Car info added")
+        except sqlalchemy.exc.OperationalError:
+            logger.error('Failed to connect to server. '
+                         'Please check if you are connected to Northwestern VPN')
 
     def close(self) -> None:
         """
