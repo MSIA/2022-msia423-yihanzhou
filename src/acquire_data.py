@@ -22,6 +22,8 @@ def import_data(path, columns=None):
     data = pd.read_csv(path)
     logger.info('Data loaded from path %s', path)
 
+    if not isinstance(data, pd.DataFrame):
+        raise TypeError("Provided argument `data` is not a Panda's DataFrame object")
     data = data[columns]
     logger.info("The columns for the model has been selected")
 
