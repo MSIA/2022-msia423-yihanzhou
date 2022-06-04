@@ -142,6 +142,11 @@ So, it is a good way to quantify the apps in several ways:
 
 ## Running the app 
 
+Before running the app, pay attention to set the following environment variables:
+- AWS_ACCESS_KEY_ID
+- AWS_SECRET_ACCESS_KEY
+- SQLALCHEMY_DATABASE_URI
+
 ### 1. Initialize the database
 #### Build the image 
 
