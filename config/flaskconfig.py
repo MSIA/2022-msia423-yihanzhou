@@ -1,4 +1,5 @@
 import os
+
 DEBUG = True
 LOGGING_CONFIG = "config/logging/local.conf"
 PORT = 5000
@@ -22,3 +23,11 @@ elif DB_HOST is None:
 else:
     SQLALCHEMY_DATABASE_URI = f'{DB_DIALECT}://{DB_USER}:{DB_PW}@{DB_HOST}:{DB_PORT}/{DATABASE}'
 
+# Categorical questions used in the app
+MODEL_TYPE = ['5 Series', '6 Series', '1 Series', '7 Series', '2 Series',
+              '4 Series', 'X3', '3 Series', 'X5', 'X4', 'i3', 'X1', 'M4', 'X2',
+              'X6', '8 Series', 'Z4', 'X7', 'M5', 'i8', 'M2', 'M3', 'M6', 'Z3']
+TRANSMISSION_TYPE = ['Automatic', 'Manual', 'Semi-Auto']
+FUELTYPE = ['Diesel', 'Petrol', 'Other', 'Hybrid', 'Electric']
+ENGINESIZE = [2.0, 3.0, 1.5, 0.6, 1.6, 4.4, 0.0, 2.2, 2.5, 4.0, 3.2, 1.0, 5.0,
+              1.9, 6.6, 2.8, 3.5]
