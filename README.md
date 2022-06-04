@@ -3,9 +3,9 @@ Author: Yihan Zhou
 
 # Table of Contents
 * [Project Charter ](#Project-Charter)
-  * [1. Vision](#1.-Vision)
-  * [2. Mission](#2.-Mission)
-  * [3. Success criteria](#3.-Success-criteria)
+  * [1. Vision](#1.Vision)
+  * [2. Mission](Mission)
+  * [3. Success criteria](Success-criteria)
 * [Directory structure ](#Directory-structure)
 * [Running the app ](#Running-the-app)
     * [1. Initialize the database ](#1.-Initialize-the-database)
