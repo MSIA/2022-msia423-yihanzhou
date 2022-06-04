@@ -3,39 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <link href="static/basic.css" rel="stylesheet">
+    <style>
+      h1 {
+        text-align: center;
+        color: #424242;
+      }
+      h3 {
+        text-align: center;
+        color: #424242;
+      }
+      h4 {
+        font-family:Arial, sans-serif;
+        color: #424242;
+      }
+
+      label {
+        font-family:Times New Roman, serif;
+        font-size: small;
+        text-align: justify;
+        text-justify: inter-word;
+        color: #424242;
+      }
+      input {
+        font-family:Times New Roman, serif;
+        text-align: justify;
+        text-justify: inter-word;
+        color: #424242;
+      }
+      div {
+        text-align: center;
+      }
+      body {
+        background-color: #FFFFFF
+      }
+
+    </style>
+
+    <title>Main Menu for BMW Car Price Estimator</title>
+
 </head>
 
 <body>
+    <h1>
+        Main Menu for BMW Car Price Estimator
+    </h1>
+
     <h3>
-         <a href = "{{ url_for('index') }}">Penny Lane Music Recommender</a>
+         <a href = "{{ url_for('index') }}">BMW Car Price Estimator</a>
     </h3>
 
-    <hr/>
-    <table>
-         <thead>
-            <tr>
-               <th>Title</th>
-               <th>Artist</th>
-               <th>Album</th>
-            </tr>
-         </thead>
+    <br/>
 
-         <tbody>
-            {% for track in tracks %}
-               <tr>
-                   <td>{{ track.title }}</td>
-                   <td>{{ track.artist }}</td>
-                   <td>{{ track.album }}</td>
-               </tr>
-            {% endfor %}
-         </tbody>
-      </table>
-      <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
-      <dl>
-        <input type=text size=15 name=title placeholder="Title">
-        <input type=text size=15 name=artist placeholder="Artist">
-        <input type=text size=15 name=album placeholder="Album">
-        <input type=submit value=Add>
+    <img src="https://cdn.vox-cdn.com/thumbor/xF-6b3Dh06oxKCpcc_eO8BUduyY=/0x0:1600x1066/1820x1213/filters:focal(672x405:928x661):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/70629995/967586.0.jpeg" alt="Image" width="1500", height="500", align="justify"></img>
+
+    <h4>
+        Please enter the car information below to get prediction results:
+    </h4>
+
+        <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+        <dl>
+
+            <label>1. Model: </label>
+            <select name="model" id="model">
+                {% for i in model %}
+                <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+            </select>
+        <br />
+
+        <br />
+            <label>2. Year: </label>
+            <input type="number" id="year" name="year">
+        <br />
+
+        <br />
+            <label>3. Transmission: </label>
+            <select name="transmission" id="transmission">
+                {% for i in tranmission %}
+                <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+            </select>
+        <br />
+
+        <br />
+            <label>4. Mileage: </label>
+            <input type="number" id="mileage" name="mileage">
+        <br />
+
+        <br />
+            <label>5. FuelType: </label>
+            <select name="fueltype" id="fueltype">
+                {% for i in fuelType %}
+                <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+            </select>
+        <br />
+
+        <br />
+            <label>6. MPG: </label>
+            <input type="number" id="mpg" name="mpg">
+        <br />
+
+        <br />
+            <label>7. EngineSize: </label>
+            <select name="enginesize" id="enginesize">
+                {% for i in engineSize %}
+                <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+            </select>
+        <br />
+
+        <br />
+
+        <input type=submit value="Save car information & Get Prediction">
       </dl>
     </form>
 
