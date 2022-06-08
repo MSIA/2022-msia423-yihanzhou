@@ -6,20 +6,22 @@ import logging
 
 import pandas as pd
 
-import sklearn
+import typing
+import numpy
 from sklearn import metrics
 
 logging.basicConfig(format='%(name)-12s %(levelname)-8s %(message)s', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
-def evaluation(y_test, y_pred):
+def evaluation(y_test: pd.Series,
+               y_pred: numpy.typing.ArrayLike) -> pd.DataFrame:
     """evaluate the performance of the random forest model
         Args:
             y_test(pd.Series): the test dataset of Y variable
-            y_pred(np.ndarray): the test prediction results
+            y_pred(numpy.typing.ArrayLike): the test prediction results
         Returns:
-            result(pd.Dataframe): The result of the model
+            result(pd.DataFrame): The result file
     """
     r2 = metrics.r2_score(y_test, y_pred)
     mae = metrics.mean_absolute_error(y_test, y_pred)

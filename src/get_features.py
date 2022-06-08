@@ -4,12 +4,14 @@ The module is to featurize the data and get the predictive and target variables
 import logging
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
+from typing import List
 
 logging.basicConfig(format='%(name)-12s %(levelname)-8s %(message)s', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
-def get_features(data, cat_col):
+def get_features(data: pd.DataFrame,
+                 cat_col: List[str]) -> pd.DataFrame:
     """
     Convert the categorical variables into dummy variables
     Args:

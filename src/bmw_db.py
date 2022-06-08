@@ -61,7 +61,7 @@ def create_db(engine_string: str = None) -> None:
     except sqlalchemy.exc.OperationalError:
         message = ('You might have connection error. Have you configured \n'
                    'SQLALCHEMY_DATABASE_URI variable correctly and connect to Northwestern VPN?')
-        logger.error("Could not connect to database!")
+        logger.warning("Could not connect to database!")
         logger.error('%s', message)
     else:
         logger.info("Database created!")
@@ -79,7 +79,7 @@ class CarManager:
     """
 
     def __init__(self, app: typing.Optional[flask.app.Flask] = None,
-                 engine_string: typing.Optional[str] = None):
+                 engine_string: typing.Optional[str] = None) -> None:
         """
         Args:
             app (Flask): Flask app
@@ -95,7 +95,7 @@ class CarManager:
         else:
             raise ValueError("Need either an engine string or a Flask app to initialize")
 
-    def add_price_result(self, input_path: str):
+    def add_price_result(self, input_path: str) -> None:
         """
         Create the result table in RDS
 

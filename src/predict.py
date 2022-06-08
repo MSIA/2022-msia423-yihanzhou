@@ -5,8 +5,9 @@ user input transformation and prediction functionality
 
 import logging
 
+import numpy
 import pandas as pd
-import numpy as np
+import typing
 import pickle
 from sklearn.preprocessing import OneHotEncoder
 
@@ -14,7 +15,9 @@ logging.basicConfig(format='%(name)-12s %(levelname)-8s %(message)s', level=logg
 logger = logging.getLogger(__name__)
 
 
-def transform_input(ui_dict, cat_cols, ohe_cols):
+def transform_input(ui_dict: dict,
+                    cat_cols: typing.List[str],
+                    ohe_cols: typing.List[str]) -> pd.DataFrame:
     """Transform the user input from the app to get predictions using the trained model
     Args:
         ui_dict (dict): a dictionary of user input, collected from the app
@@ -48,7 +51,8 @@ def transform_input(ui_dict, cat_cols, ohe_cols):
     return test_df
 
 
-def get_prediction(test_df, model_path):
+def get_prediction(test_df: pd.DataFrame,
+                   model_path: str) -> numpy.ndarray:
     """Get car price prediction for new user input
     Args:
         test_df (:obj:`DataFrame <pandas.DataFrame>`): a DataFrame of the transformed user input
@@ -59,11 +63,13 @@ def get_prediction(test_df, model_path):
     """
 
     # load the pre-trained model
-    try:
-        loaded_rf = pickle.load(open(model_path, 'rb'))
-        logger.info('Loaded model from %s', model_path)
-    except OSError:
-        logger.error('Model is not found from %s', model_path)
+    with open(model_path, 'rb') as file:
+        try:
+            loaded_rf = pickle.load(file)
+        except pickle.PickleError:
+            logger.error("Error while loading trained model object.")
+        else:
+            logger.info('Loaded model from %s', model_path)
 
     # make prediction
     ypred = loaded_rf.predict(test_df)
