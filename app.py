@@ -7,7 +7,6 @@ import traceback
 
 import yaml
 import sqlalchemy.exc
-import pandas as pd
 from flask import Flask, render_template, request
 
 # For setting up the Flask-SQLAlchemy database session
@@ -67,7 +66,7 @@ def index():
     #     return render_template('index.html', car_info=car_info)
 
     try:
-        logger.debug("Index page accessed")
+        logger.info("Index page accessed")
         return render_template('index.html',
                                model=MODEL_TYPE,
                                # year=year,

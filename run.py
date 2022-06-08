@@ -181,7 +181,7 @@ if __name__ == '__main__':
         elif args.step == 'score':
             output = score.score_model(inputs[0], inputs[1])
         elif args.step == 'evaluate':
-            output = evaluation.evaluation(inputs[0], inputs[1])
+            evaluation.evaluation(inputs[0], inputs[1])
 
             # Save the output to the path
         if args.output is not None:
