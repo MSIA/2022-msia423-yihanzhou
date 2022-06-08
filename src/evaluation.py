@@ -6,7 +6,6 @@ import logging
 
 import pandas as pd
 
-import typing
 import numpy
 from sklearn import metrics
 
@@ -15,11 +14,11 @@ logger = logging.getLogger(__name__)
 
 
 def evaluation(y_test: pd.Series,
-               y_pred: numpy.typing.ArrayLike) -> pd.DataFrame:
+               y_pred: numpy.ndarray) -> pd.DataFrame:
     """evaluate the performance of the random forest model
         Args:
             y_test(pd.Series): the test dataset of Y variable
-            y_pred(numpy.typing.ArrayLike): the test prediction results
+            y_pred(numpy.ndarray): the test prediction results
         Returns:
             result(pd.DataFrame): The result file
     """
