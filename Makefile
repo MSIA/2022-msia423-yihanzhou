@@ -59,6 +59,8 @@ cleanresult:
 
 all: download_from_s3 raw features split train score evaluate
 
+get_clean: download_from_s3 raw
+
 trainall: split train
 
 
